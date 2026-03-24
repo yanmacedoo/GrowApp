@@ -7,7 +7,9 @@ import './App.css';
 
 import { Environments } from './pages/Environments';
 import { Plants } from './pages/Plants';
+import { Harvests } from './pages/Harvests';
 import { History } from './pages/History';
+import { CalendarView } from './pages/CalendarView';
 import { AIAssistant } from './pages/AIAssistant';
 import { Login } from './pages/Login';
 import { Settings } from './pages/Settings';
@@ -63,7 +65,9 @@ function App() {
           <nav className="main-nav">
             <Link to="/" className="nav-link">Ambientes</Link>
             <Link to="/plantas" className="nav-link">Plantas</Link>
+            <Link to="/mapa" className="nav-link">Mapa Geral</Link>
             <Link to="/historico" className="nav-link">Histórico</Link>
+            <Link to="/colheitas" className="nav-link">Colheitas</Link>
             <Link to="/ia" className="nav-link nav-link-ai">
               <Sparkles size={16} /> Assistente IA
             </Link>
@@ -78,6 +82,8 @@ function App() {
           <Route path="/" element={user ? <Environments /> : <Navigate to="/login" />} />
           <Route path="/ambientes/:id" element={user ? <Plants /> : <Navigate to="/login" />} />
           <Route path="/plantas" element={user ? <Plants /> : <Navigate to="/login" />} />
+          <Route path="/mapa" element={user ? <CalendarView /> : <Navigate to="/login" />} />
+          <Route path="/colheitas" element={user ? <Harvests /> : <Navigate to="/login" />} />
           <Route path="/historico" element={user ? <History /> : <Navigate to="/login" />} />
           <Route path="/ia" element={user ? <AIAssistant /> : <Navigate to="/login" />} />
           <Route path="/configuracoes" element={user ? <Settings /> : <Navigate to="/login" />} />

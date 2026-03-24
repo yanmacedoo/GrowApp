@@ -137,7 +137,7 @@ export const Plants = () => {
 
   const filteredPlants = plants.filter(p => {
       const matchQuery = p.strain.toLowerCase().includes(searchQuery.toLowerCase()) || p.id.includes(searchQuery.toLowerCase());
-      const matchStage = stageFilter ? p.currentStage === stageFilter : true;
+      const matchStage = stageFilter ? p.currentStage === stageFilter : p.currentStage !== 'Colheita';
       return matchQuery && matchStage;
   });
 
@@ -174,12 +174,11 @@ export const Plants = () => {
                value={stageFilter}
                onChange={e => setStageFilter(e.target.value)}
             >
-               <option value="">Filtro: Todos os Estágios</option>
+               <option value="">Filtro: Todos os Estágios (Ativos)</option>
                <option value="Germinação">Germinação</option>
                <option value="Muda">Muda</option>
                <option value="Vegetativo">Vegetativo</option>
                <option value="Floração">Floração</option>
-               <option value="Colheita">Colheita</option>
             </select>
          </div>
       )}

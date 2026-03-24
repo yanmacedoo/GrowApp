@@ -73,6 +73,9 @@ export const updatePlantStage = (id: string, newStage: string) => {
     const p = plants.find((x:any) => x.id === id);
     if(p) {
         p.currentStage = newStage;
+        if(newStage === 'Colheita' && !p.harvestDate) {
+            p.harvestDate = new Date().toISOString();
+        }
         localStorage.setItem(getUserKey('growapp_plants'), JSON.stringify(plants));
     }
 };
@@ -80,7 +83,36 @@ export const updatePlantStage = (id: string, newStage: string) => {
 const updateEnvCounts = (currentPlants: any[]) => {
     const envs = getEnvs();
     envs.forEach((env: any) => {
-        env.plantCount = currentPlants.filter((p:any) => p.environmentId === env.id).length;
+        env.plantCount = currentPlants.filter((p:any) => p.environmentId === env.id && p.currentStage !== 'Colheita').length;
     });
     localStorage.setItem(getUserKey('growapp_envs'), JSON.stringify(envs));
+};
+
+// --- TASKS (AGENDA/MAPA) ---
+export const getTasks = () => {
+    const data = localStorage.getItem(getUserKey('growapp_tasks'));
+    return data ? JSON.parse(data) : [];
+};
+
+export const addTask = (task: any) => {
+    const tasks = getTasks();
+    task.id = Date.now().toString() + Math.random().toString(36).substring(2, 7);
+    task.completed = false;
+    tasks.push(task);
+    localStorage.setItem(getUserKey('growapp_tasks'), JSON.stringify(tasks));
+};
+
+export const updateTask = (id: string, updates: any) => {
+    const tasks = getTasks();
+    const t = tasks.find((x:any) => x.id === id);
+    if(t) {
+        Object.assign(t, updates);
+        localStorage.setItem(getUserKey('growapp_tasks'), JSON.stringify(tasks));
+    }
+};
+
+export const deleteTask = (id: string) => {
+    const tasks = getTasks();
+    const newTasks = tasks.filter((x:any) => x.id !== id);
+    localStorage.setItem(getUserKey('growapp_tasks'), JSON.stringify(newTasks));
 };
