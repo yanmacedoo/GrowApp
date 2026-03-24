@@ -50,9 +50,9 @@ export const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-card glass-panel">
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
-          <div className="brand-icon" style={{ width: 'fit-content', marginBottom: '1rem', padding: '0.8rem', borderRadius: '16px' }}>
-            <Sprout size={36} color="#000" strokeWidth={2.5} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem', width: '100%' }}>
+          <div className="brand-icon" style={{ margin: '0 auto 1.5rem auto', padding: '0.8rem', borderRadius: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '56px', height: '56px' }}>
+            <Sprout size={32} color="#000" strokeWidth={2.5} />
           </div>
           <h2 className="auth-title">{isLogin ? 'Bem-vindo de volta' : 'Crie sua conta'}</h2>
           <p className="auth-subtitle">
@@ -66,12 +66,11 @@ export const Login = () => {
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {!isLogin && (
-            <div className="modal-form-group">
+            <div>
               <label>Nome Completo</label>
-              <div className="filter-group">
-                <User size={18} className="text-secondary" />
+              <div className="auth-input-wrap">
+                <User size={18} />
                 <input 
-                  className="filter-input" 
                   placeholder="Seu nome" 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -81,28 +80,26 @@ export const Login = () => {
             </div>
           )}
 
-          <div className="modal-form-group">
+          <div>
             <label>E-mail</label>
-            <div className="filter-group">
-              <Mail size={18} className="text-secondary" />
+            <div className="auth-input-wrap">
+              <Mail size={18} />
               <input 
                 type="email"
-                className="filter-input" 
                 placeholder="seu@email.com" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-            </div>
+              </div>
           </div>
 
-          <div className="modal-form-group">
+          <div>
             <label>Senha</label>
-            <div className="filter-group">
-              <Lock size={18} className="text-secondary" />
+            <div className="auth-input-wrap">
+              <Lock size={18} />
               <input 
                 type="password"
-                className="filter-input" 
                 placeholder="••••••••" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
