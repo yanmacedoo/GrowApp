@@ -4,7 +4,8 @@ import { auth } from '../firebase';
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
-  updateProfile
+  updateProfile,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { Sprout, LogIn, UserPlus, Mail, Lock, User } from 'lucide-react';
 
@@ -14,13 +15,41 @@ export const Login = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const [resetMessage, setResetMessage] = useState('');
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
 
+  const handleResetPassword = async () => {
+    if (!email) {
+      setError('Digite seu e-mail no campo acima para redefinir a senha.');
+      setResetMessage('');
+      return;
+    }
+    try {
+      setLoading(true);
+      setError('');
+      setResetMessage('');
+      await sendPasswordResetEmail(auth, email);
+      setResetMessage('E-mail de redefinição enviado com sucesso! Verifique sua caixa de entrada.');
+    } catch (err: any) {
+      console.error(err);
+      if (err.code === 'auth/user-not-found') {
+        setError('Nenhuma conta encontrada com este e-mail.');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('Por favor, insira um e-mail válido.');
+      } else {
+        setError('Erro ao enviar e-mail de redefinição.');
+      }
+    } finally {
+       setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setResetMessage('');
     setLoading(true);
 
     try {
@@ -63,6 +92,7 @@ export const Login = () => {
         </div>
 
         {error && <div className="auth-error mb-4">{error}</div>}
+        {resetMessage && <div className="auth-error mb-4" style={{ backgroundColor: 'rgba(29, 235, 105, 0.1)', color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}>{resetMessage}</div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {!isLogin && (
@@ -106,6 +136,18 @@ export const Login = () => {
                 required
               />
             </div>
+            {isLogin && (
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+                <button 
+                  type="button" 
+                  className="auth-switch-link" 
+                  style={{ fontSize: '0.75rem', padding: 0 }}
+                  onClick={handleResetPassword}
+                >
+                  Esqueceu a senha?
+                </button>
+              </div>
+            )}
           </div>
 
           <button 
