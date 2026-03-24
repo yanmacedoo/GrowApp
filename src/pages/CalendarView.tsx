@@ -99,16 +99,20 @@ export const CalendarView = () => {
        envIdForFilter = p ? p.environmentId : '';
     }
 
-    const isoDate = selectedDate.toISOString();
-    addTask({
-       date: isoDate,
+    const payload: any = {
+       date: selectedDate.toISOString(),
        type: formData.type,
        targetType: formData.targetType,
        targetId: formData.targetId,
        targetName: tName,
-       envId: envIdForFilter, // Usado para filtrar no mapa depois
-       description: formData.description
-    });
+       envId: envIdForFilter || '', // Evita undefined
+    };
+
+    if (formData.description) {
+       payload.description = formData.description;
+    }
+
+    addTask(payload);
     
     setShowModal(false);
     setFormData({ ...formData, description: '' });
