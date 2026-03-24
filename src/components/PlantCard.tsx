@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { ChangeEvent } from 'react';
-import { Leaf, Droplets, Calendar, Sparkles, ClipboardList } from 'lucide-react';
+import { Leaf, Droplets, Calendar, Sparkles, ClipboardList, Edit2 } from 'lucide-react';
 import { addAction, updatePlantStage } from '../store';
 import './PlantCard.css';
 
@@ -15,9 +15,10 @@ interface PlantProps {
     environmentName: string;
   };
   onAction?: (plant: any) => void;
+  onEdit?: (plant: any) => void;
 }
 
-export const PlantCard = ({ plant, onAction }: PlantProps) => {
+export const PlantCard = ({ plant, onAction, onEdit }: PlantProps) => {
   const [localStage, setLocalStage] = useState(plant.currentStage);
 
   const handleStageChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -75,6 +76,9 @@ export const PlantCard = ({ plant, onAction }: PlantProps) => {
       <div className="plant-footer">
         <span className="env-badge">{plant.environmentName}</span>
         <div className="actions">
+          <button className="btn-action" title="Editar Planta" onClick={() => onEdit && onEdit(plant)}>
+            <Edit2 size={16} />
+          </button>
           <Link to={`/historico?search=${plant.id}`} className="btn-action" title="Ver Histórico Individual">
             <ClipboardList size={16} />
           </Link>

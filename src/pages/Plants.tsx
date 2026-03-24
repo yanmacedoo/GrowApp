@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Plus, Filter, Search } from 'lucide-react';
 import { PlantCard } from '../components/PlantCard';
 import { ActionModal } from '../components/ActionModal';
-import { getPlants, addPlants, getEnvs, addAction } from '../store';
+import { getPlants, addPlants, updatePlant, deletePlant, getEnvs, addAction } from '../store';
 import './Plants.css';
 
 export const Plants = () => {
@@ -11,10 +11,13 @@ export const Plants = () => {
   
   const [plants, setPlants] = useState<any[]>([]);
   const [envs, setEnvs] = useState<any[]>([]);
+  
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingPlant, setEditingPlant] = useState<any>(null);
+
   const [formData, setFormData] = useState({ strain: '', quantity: 1, colorTag: 0, environmentId: '' });
   
-  // Mobile e Desktop - Filter States Funcionais
+  // Mobile e Desktop - Filter States
   const [showFilter, setShowFilter] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [stageFilter, setStageFilter] = useState('');
@@ -46,8 +49,39 @@ export const Plants = () => {
   };
 
   const handleOpenNew = () => {
+    setEditingPlant(null);
     setFormData(prev => ({ ...prev, strain: '', quantity: 1, colorTag: 0 }));
     setModalOpen(true);
+  };
+
+  const handleOpenEdit = (plant: any) => {
+    setEditingPlant(plant);
+    setFormData({ 
+      strain: plant.strain, 
+      quantity: 1, 
+      colorTag: plant.colorTag, 
+      environmentId: plant.environmentId 
+    });
+    setModalOpen(true);
+  };
+
+  const handleDelete = () => {
+    if (!editingPlant) return;
+    if (window.confirm(`Excluir permanentemente a genética "${editingPlant.strain}" do sistema? Essa ação não pode ser desfeita.`)) {
+      deletePlant(editingPlant.id);
+      
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('pt-BR') + ', ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+      addAction({
+        type: 'Observação',
+        date: dateStr,
+        observation: `Planta (Genética: ${editingPlant.strain}) removida permanentemente pelo cultivador. Causa não registrada.`,
+        environmentName: editingPlant.environmentName
+      });
+
+      loadData();
+      setModalOpen(false);
+    }
   };
 
   const handleSave = () => {
@@ -56,33 +90,47 @@ export const Plants = () => {
     const targetEnv = envs.find(e => e.id === formData.environmentId);
     if (!targetEnv) return;
     
-    const qty = Number(formData.quantity) || 1;
-    const newPlants = [];
-    
-    for(let i=0; i<qty; i++) {
-        newPlants.push({
-            id: Math.random().toString(36).substr(2, 6),
-            strain: formData.strain + (qty > 1 ? ` #${i+1}` : ''),
-            colorTag: Number(formData.colorTag),
-            daysPlanted: 0,
-            currentStage: 'Germinação',
-            environmentId: formData.environmentId,
-            environmentName: targetEnv.name
-        });
-    }
-    
-    addPlants(newPlants);
-    
     const now = new Date();
     const dateStr = now.toLocaleDateString('pt-BR') + ', ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
 
-    addAction({
-      type: 'Observação',
-      date: dateStr,
-      observation: `Semeadura/Plantio: ${qty}x plantas da genética "${formData.strain}" adicionadas ao ambiente.`,
-      environmentName: targetEnv.name
-    });
-
+    if (editingPlant) {
+      updatePlant(editingPlant.id, { 
+        strain: formData.strain, 
+        colorTag: formData.colorTag, 
+        environmentId: formData.environmentId,
+        environmentName: targetEnv.name
+      });
+      addAction({
+        type: 'Observação',
+        date: dateStr,
+        observation: `Dados corporais da planta foram editados. Nova identificação visual: ${formData.strain} e transferida para ambiente ${targetEnv.name}.`,
+        environmentName: targetEnv.name
+      });
+    } else {
+      const qty = Number(formData.quantity) || 1;
+      const newPlants = [];
+      
+      for(let i=0; i<qty; i++) {
+          newPlants.push({
+              id: Math.random().toString(36).substr(2, 6),
+              strain: formData.strain + (qty > 1 ? ` #${i+1}` : ''),
+              colorTag: Number(formData.colorTag),
+              daysPlanted: 0,
+              currentStage: 'Germinação',
+              environmentId: formData.environmentId,
+              environmentName: targetEnv.name
+          });
+      }
+      
+      addPlants(newPlants);
+      addAction({
+        type: 'Observação',
+        date: dateStr,
+        observation: `Semeadura/Plantio: ${qty}x plantas da genética "${formData.strain}" adicionadas ao ambiente.`,
+        environmentName: targetEnv.name
+      });
+    }
+    
     loadData();
     setModalOpen(false);
   };
@@ -138,11 +186,12 @@ export const Plants = () => {
 
       <div className="plants-grid mt-4">
         {filteredPlants.map(p => (
-          <PlantCard key={p.id} plant={p} onAction={setActionModalTarget} />
+          <PlantCard key={p.id} plant={p} onAction={setActionModalTarget} onEdit={handleOpenEdit} />
         ))}
         {filteredPlants.length === 0 && (
-          <div className="flex flex-col items-center" style={{ gridColumn: '1 / -1', padding: '3rem', opacity: 0.6 }}>
-            <p>Nenhuma planta encontrada.</p>
+          <div className="flex flex-col items-center glass-panel" style={{ gridColumn: '1 / -1', padding: '3rem', opacity: 0.8, textAlign: 'center' }}>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', fontWeight: 600 }}>Nenhuma semente no solo</h3>
+            <p className="text-secondary">Abra algum ambiente e plante seu primeiro lote para começar a registrar ocorrências de fenótipos.</p>
           </div>
         )}
       </div>
@@ -150,7 +199,7 @@ export const Plants = () => {
       {modalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3 className="modal-title">Novo Lote ou Planta</h3>
+            <h3 className="modal-title">{editingPlant ? 'Editar Aspectos Visuais/Cadastro' : 'Novo Lote ou Planta'}</h3>
             
             <div className="modal-form-group">
               <label>Nome / Genética (Strain)</label>
@@ -194,24 +243,37 @@ export const Plants = () => {
               </select>
             </div>
 
-            <div className="modal-form-group">
-              <label>Quantidade de Semeadura (Lote)</label>
-              <input 
-                type="number"
-                min="1"
-                max="50"
-                className="modal-input" 
-                value={formData.quantity}
-                onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value) || 1 })}
-              />
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.2rem'}}>
-                Útil se for cultivar vários clones. Acabam ganhando um índice gerado de id (*ex: #1, #2*).
-              </span>
-            </div>
+            {!editingPlant && (
+              <div className="modal-form-group">
+                <label>Quantidade de Semeadura (Lote)</label>
+                <input 
+                  type="number"
+                  min="1"
+                  max="50"
+                  className="modal-input" 
+                  value={formData.quantity}
+                  onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value) || 1 })}
+                />
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.2rem'}}>
+                  Gera ramificações em batch com identificadores contínuos (*ex: #1, #2*).
+                </span>
+              </div>
+            )}
 
-            <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setModalOpen(false)}>Cancelar</button>
-              <button className="btn btn-primary" onClick={handleSave}>Plantar</button>
+            <div className="modal-actions" style={{ flexWrap: 'wrap' }}>
+              {editingPlant && (
+                <button 
+                  className="btn text-sm font-semibold" 
+                  style={{ color: '#ef4444', marginRight: 'auto', border: '1px solid rgba(239, 68, 68, 0.3)', background: 'transparent' }} 
+                  onClick={handleDelete}
+                >
+                  Excluir Planta
+                </button>
+              )}
+              <div style={{ display: 'flex', gap: '1rem', width: editingPlant ? 'auto' : '100%', flex: editingPlant ? 'none' : 1 }}>
+                <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setModalOpen(false)}>Cancelar</button>
+                <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>{editingPlant ? 'Salvar Configuração' : 'Plantar Lote'}</button>
+              </div>
             </div>
           </div>
         </div>
