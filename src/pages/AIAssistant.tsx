@@ -4,8 +4,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getPlants, getEnvs } from '../store';
 import './AIAssistant.css';
 
-const API_KEY = "AIzaSyBopt2BT5szHS8p5uANyKZh-qyk3M1kgLI";
-const genAI = new GoogleGenerativeAI(API_KEY);
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
+const genAI = new GoogleGenerativeAI(API_KEY || 'dummy_key');
 
 export const AIAssistant = () => {
   const [prompt, setPrompt] = useState('');
@@ -33,6 +33,14 @@ export const AIAssistant = () => {
     setLoading(true);
     
     try {
+      if (!API_KEY || API_KEY === 'dummy_key' || API_KEY === '') {
+         setMessages(prev => [
+           ...prev, 
+           { role: 'assistant', text: `⚠️ **Chave de API Revogada ou Inexistente**.\nO Google bloqueou a chave antiga porque ela foi exposta publicamente no GitHub.\nPara voltar a usar a IA, cole uma nova chave no seu arquivo \`.env\` (VITE_GEMINI_API_KEY) e reinicie o servidor.` }
+         ]);
+         return;
+      }
+      
       const plants = getPlants();
       const envs = getEnvs();
       // Context-Aware alimentando a IA com o histórico vivo da tela:

@@ -14,13 +14,20 @@ import { AIAssistant } from './pages/AIAssistant';
 import { Login } from './pages/Login';
 import { Settings } from './pages/Settings';
 import { TipCarousel } from './components/TipCarousel';
+import { initStore, clearStore } from './store';
 
 function App() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      // Bloqueia a UI de carregar até a fazenda toda ser enviada do Firestore pro Cache Local
+      if (currentUser) {
+         await initStore(currentUser.uid);
+      } else {
+         clearStore();
+      }
       setUser(currentUser);
       setLoading(false);
     });
