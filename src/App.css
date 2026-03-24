@@ -68,9 +68,8 @@
 .tip-text {
   color: var(--text-secondary);
   font-size: 0.75rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.4;
+  white-space: normal;
 }
 
 .main-nav {
@@ -209,6 +208,35 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+}
+
+.auth-form label {
+  text-align: center;
+  width: 100%;
+}
+
+.auth-form .filter-group {
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.auth-form .filter-group svg {
+  position: static;
+  margin: 0 auto;
+  opacity: 0.7;
+}
+
+.auth-form .filter-input {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  text-align: center;
+  font-size: 16px !important; /* Fix iOS Zoom */
+}
+
+/* Fix iOS Zoom across app */
+input, select, textarea {
+  font-size: 16px !important;
 }
 
 .auth-switch {

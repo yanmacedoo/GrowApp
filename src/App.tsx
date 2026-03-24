@@ -46,6 +46,14 @@ function App() {
               </div>
               <h1>GrowApp</h1>
             </div>
+            <Link to="/configuracoes" title="Configurações de Conta" style={{ 
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '40px', height: '40px', borderRadius: '50%', 
+              background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)',
+              transition: 'all 0.2s ease', border: '1px solid var(--border-subtle)'
+            }}>
+              <User size={20} />
+            </Link>
           </div>
           
           <div className="tips-container">
@@ -59,11 +67,6 @@ function App() {
             <Link to="/ia" className="nav-link nav-link-ai">
               <Sparkles size={16} /> Assistente IA
             </Link>
-            <div className="flex items-center gap-2 ml-4 pl-4 border-l" style={{ borderColor: 'var(--border-subtle)' }}>
-              <Link to="/configuracoes" className="nav-link" title="Configurações">
-                <User size={18} />
-              </Link>
-            </div>
           </nav>
         </header>
       )}
