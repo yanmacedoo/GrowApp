@@ -21,14 +21,22 @@ export const ActionModal = ({ targetType, targetId, targetName, envName, availab
     const today = new Date();
     const dateStr = today.toLocaleDateString('pt-BR') + ', ' + today.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
 
-    addAction({
+    const payload: any = {
       type: formData.type,
       date: dateStr,
       observation: formData.observation || `Registro de Manejo: ${formData.type} computado com sucesso.`,
-      productUsed: formData.product || undefined,
-      plantId: targetType === 'Planta' ? targetId : undefined,
       environmentName: targetType === 'Ambiente' ? targetName : (envName || 'Ambiente')
-    });
+    };
+
+    if (formData.product) {
+      payload.productUsed = formData.product;
+    }
+
+    if (targetType === 'Planta' && targetId) {
+      payload.plantId = targetId;
+    }
+
+    addAction(payload);
     
     onClose();
   };
