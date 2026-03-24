@@ -50,9 +50,9 @@ export const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-card glass-panel">
-        <div className="flex flex-col items-center mb-8">
-          <div className="brand-icon mb-4" style={{ width: 'fit-content' }}>
-            <Sprout size={32} color="#000" strokeWidth={2.5} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
+          <div className="brand-icon" style={{ width: 'fit-content', marginBottom: '1rem', padding: '0.8rem', borderRadius: '16px' }}>
+            <Sprout size={36} color="#000" strokeWidth={2.5} />
           </div>
           <h2 className="auth-title">{isLogin ? 'Bem-vindo de volta' : 'Crie sua conta'}</h2>
           <p className="auth-subtitle">
