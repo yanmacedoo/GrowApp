@@ -1,0 +1,83 @@
+/* Mobile First Plant Layout */
+
+.header-actions {
+  display: flex;
+  width: 100%;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.header-actions .btn {
+  flex: 1;
+  padding: 0.5rem 0.25rem;
+  font-size: 0.875rem;
+}
+
+.plants-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Painel de Filtro */
+.filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 12px;
+  background: rgba(18, 24, 20, 0.9);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 0 1rem;
+}
+
+.filter-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0.75rem 0.5rem;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.filter-select {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .header-actions {
+    width: auto;
+    margin-top: 0;
+    gap: 1rem;
+  }
+  .header-actions .btn {
+    flex: none;
+    padding: 0.5rem 1rem;
+  }
+
+  .plants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .filter-panel {
+    flex-direction: row;
+    align-items: center;
+  }
+}
